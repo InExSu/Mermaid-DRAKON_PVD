@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>DRAKON Plugin - Minimal Test</title>
+</head>
+<body>
+  <h1>DRAKON Plugin Test</h1>
+  
+  <h2>Test: Flowchart (should work)</h2>
+  <pre class="mermaid">
+flowchart TD
+    A[Start] --> B[End]
+  </pre>
+
+  <h2>Test: DRAKON</h2>
+  <pre class="mermaid">
+drakon
+  Начало: "Start"
+  Конец: "End"
+  </pre>
+
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    
+    // Тестовый плагин с простым парсером
+    mermaid.registerExternalDiagrams([{
+      id: 'drakon',
+      detector: (text) => /^\s*drakon\b/.test(text),
+      loader: () => ({
+        parse: (text) => {
+          console.log('Parsing:', text);
+          
+          // Возвращаем пустой результат - Mermaid должен нарисовать пустой SVG
+          return {
+            type: 'drakonDiagram',
+            nodes: [],
+            edges: []
+          };
+        }
+      })
+    }]);
+    
+    mermaid.initialize({ startOnLoad: true });
+  </script>
+</body>
+</html>

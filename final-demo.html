@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>DRAKON Plugin - Working Demo</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    pre.mermaid { background: #f5f5f5; padding: 10px; border: 1px solid #ddd; margin: 10px 0; }
+    svg { border: 1px solid #333; background: white; }
+  </style>
+</head>
+<body>
+  <h1>DRAKON Plugin Demo</h1>
+  
+  <h2>Flowchart (native Mermaid)</h2>
+  <pre class="mermaid">
+flowchart TD
+    Start[Start] --> End[End]
+  </pre>
+
+  <h2>DRAKON Diagram</h2>
+  <pre class="mermaid">
+drakon
+  Начало: "Start"
+  Действие: "Process"
+  Конец: "End"
+  </pre>
+
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    
+    // Регистрация внешней диаграммы
+    mermaid.registerExternalDiagrams([{
+      id: 'drakon',
+      detector: (t) => /^\s*drakon\b/.test(t),
+      loader: () => ({
+        parse: async (t) => {
+          const lines = t.trim().split('\n').filter(l => l.trim() && l.trim() !== 'drakon');
+          const nodes = [];
+          const edges = [];
+          
+          // Парсим узлы
+          lines.forEach((l, i) => {
+            const tr = l.trim();
+            const y = i * 80;
+            
+            if (tr.startsWith('Начало:')) {
+              const text = tr.substring(7).trim().replace(/"/g, '');
+              nodes.push({ id: 'start', type: 'start', text, y, width: 160, height: 60 });
+            } else if (tr.startsWith('Конец:')) {
+              const text = tr.substring(6).trim().replace(/"/g, '');
+              nodes.push({ id: 'end', type: 'end', text, y, width: 160, height: 60 });
+            } else if (tr.startsWith('Действие:')) {
+              const text = tr.substring(9).trim().replace(/"/g, '');
+              nodes.push({ id: 'action' + i, type: 'action', text, y, width: 160, height: 60 });
+            }
+          });
+          
+          return { type: 'drakonDiagram', nodes, edges };
+        }
+      })
+    }]);
+    
+    mermaid.initialize({ startOnLoad: true });
+  </script>
+</body>
+</html>

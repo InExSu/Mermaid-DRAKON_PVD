@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>DRAKON Plugin Demo</title>
+  <style>
+    body { font-family: Arial; padding: 20px; background: #f0f0f0; }
+    .mermaid { background: white; border: 1px solid #ccc; padding: 15px; margin: 10px 0; border-radius: 5px; }
+    svg { border: 1px solid #333; background: white; }
+  </style>
+</head>
+<body>
+  <h1>DRAKON Plugin - Working Demo</h1>
+  
+  <h2>1. Native Flowchart (работает)</h2>
+  <pre class="mermaid">
+flowchart LR
+    Start[Start] --> Process[Process] --> End[End]
+  </pre>
+
+  <h2>2. DRAKON (плагин)</h2>
+  <pre class="mermaid">
+drakon
+  Начало: "Start"
+  Действие: "Process"
+  Конец: "End"
+  </pre>
+
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    import './dist/mermaid-drakon.js';
+    
+    mermaid.initialize({ startOnLoad: true });
+  </script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>DRAKON Plugin - Minimal Working Demo</title>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    .mermaid { background: #fafafa; border: 1px solid #ddd; padding: 10px; }
+  </style>
+</head>
+<body>
+  <h1>DRAKON Plugin Demo</h1>
+  
+  <h2>Flowchart (native)</h2>
+  <pre class="mermaid">
+flowchart LR
+    Start[Start] --> Process[Process] --> End[End]
+  </pre>
+
+  <h2>DRAKON Syntax (inline plugin)</h2>
+  <pre class="mermaid">
+drakon Start Process End
+  </pre>
+
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    
+    // Simple test: just log to console
+    const plugin = {
+      id: 'drakon',
+      detector: (t) => t.includes('drakon'),
+      loader: () => ({
+        parse: (t) => {
+          console.log('DRAKON parse called:', t);
+          return { 
+            type: 'drakon', 
+            nodes: [
+              { type: 'start', id: 'n1', text: 'Start' },
+              { type: 'action', id: 'n2', text: 'Process' },
+              { type: 'end', id: 'n3', text: 'End' }
+            ],
+            edges: []
+          };
+        }
+      })
+    };
+    
+    mermaid.registerExternalDiagrams([plugin]);
+    mermaid.initialize({ startOnLoad: true });
+  </script>
+</body>
+</html>
