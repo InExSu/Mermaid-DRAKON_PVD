@@ -13,42 +13,71 @@ flowchart LR
   A[Start] --> B[End]
   </pre>
 
-  <h2>❓ DRAKON (тест)</h2>
+  <h2>❓ DRAKON (тест с renderer)</h2>
   <pre class="mermaid">
 drakon
   Начало: Start
+  Действие: Process
   Конец: End
   </pre>
 
   <script type="module">
     import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
     
-    // Плагин DRAKON
+    // Плагин DRAKON с renderer
     mermaid.registerExternalDiagrams([{
       id: 'drakon',
       detector: (text) => /^\s*drakon\b/.test(text),
       loader: () => ({
         parse: (text) => {
-          // Парсим и возвращаем простую структуру
           const nodes = [];
+          const edges = [];
           const lines = text.trim().split('\n').filter(l => l.trim() && !l.trim().startsWith('drakon'));
           
-          for (const line of lines) {
+          let prevId = null;
+          for (const [i, line] of lines.entries()) {
             const tr = line.trim();
+            let node = null;
+            
             if (tr.startsWith('Начало:')) {
-              nodes.push({ id: 'start', type: 'start', label: tr.slice(7).trim() });
+              node = { id: 'n'+i, type: 'start', label: tr.slice(7).trim() };
             } else if (tr.startsWith('Конец:')) {
-              nodes.push({ id: 'end', type: 'end', label: tr.slice(6).trim() });
+              node = { id: 'n'+i, type: 'end', label: tr.slice(6).trim() };
             } else if (tr.startsWith('Действие:')) {
-              nodes.push({ id: 'action'+nodes.length, type: 'action', label: tr.slice(9).trim() });
+              node = { id: 'n'+i, type: 'action', label: tr.slice(9).trim() };
             } else if (tr.startsWith('Ввод/Вывод:')) {
-              nodes.push({ id: 'io'+nodes.length, type: 'io', label: tr.slice(11).trim() });
+              node = { id: 'n'+i, type: 'io', label: tr.slice(11).trim() };
             } else if (tr.startsWith('Вопрос:')) {
-              nodes.push({ id: 'q'+nodes.length, type: 'question', label: tr.slice(8).trim() });
+              node = { id: 'n'+i, type: 'question', label: tr.slice(8).trim() };
+            }
+            
+            if (node) {
+              nodes.push(node);
+              if (prevId) edges.push({ from: prevId, to: node.id });
+              prevId = node.id;
             }
           }
           
-          return { type: 'drakon', nodes };
+          return { type: 'drakon', nodes, edges };
+        },
+        renderer: {
+          draw: (svgId, diagram) => {
+            // Простой SVG renderer
+            const nodes = diagram.nodes || [];
+            let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 ${nodes.length * 80 + 50}" width="400" height="${nodes.length * 80 + 50}">\n`;
+            svg += '<style>.node{fill:#fff;stroke:#333;stroke-width:2}.text{ dominant-baseline:middle; text-anchor:middle; }</style>\n';
+            
+            nodes.forEach((node, i) => {
+              const y = i * 80 + 40;
+              const shape = node.type === 'start' || node.type === 'end'
+                ? `<ellipse cx="200" cy="${y}" rx="80" ry="30" class="node"/><text x="200" y="${y}" class="text">${node.label}</text>`
+                : `<rect x="40" y="${y-30}" width="320" height="60" rx="5" class="node"/><text x="200" y="${y}" class="text">${node.label}</text>`;
+              svg += `<g>${shape}</g>\n`;
+            });
+            
+            svg += '</svg>';
+            return svg;
+          }
         }
       })
     }]);

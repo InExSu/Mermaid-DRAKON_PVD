@@ -2,91 +2,91 @@ import { registerExternalDiagrams as X } from "mermaid";
 class T {
   async parse(o) {
     try {
-      const i = o.trim().split(`
+      const n = o.trim().split(`
 `).filter((g) => g.trim() !== ""), t = [], e = [];
-      let f = null, h = null, c = null;
-      const d = () => `id_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      for (const g of i) {
-        const n = g.trim();
-        if (!n || n === "drakon") continue;
-        if (n.startsWith("Начало:")) {
-          const a = this._parseNode(n, "start"), s = a.id || d();
-          t.push({ ...a, id: s, width: 160, height: 60 }), f = s, h = s;
+      let d = null, a = null, c = null;
+      const f = () => `id_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      for (const g of n) {
+        const s = g.trim();
+        if (!s || s === "drakon") continue;
+        if (s.startsWith("Начало:")) {
+          const h = this._parseNode(s, "start"), i = h.id || f();
+          t.push({ ...h, id: i, width: 160, height: 60 }), d = i, a = i;
           continue;
         }
-        if (n.startsWith("Конец:")) {
-          const a = this._parseNode(n, "end"), s = a.id || d();
-          t.push({ ...a, id: s, width: 160, height: 60 }), f = s, h = s;
+        if (s.startsWith("Конец:")) {
+          const h = this._parseNode(s, "end"), i = h.id || f();
+          t.push({ ...h, id: i, width: 160, height: 60 }), d = i, a = i;
           continue;
         }
-        if (n.startsWith("Вопрос:")) {
-          const a = this._parseQuestionNode(n), s = a.id || d();
-          t.push({ ...a, id: s, width: 120, height: 60 }), f = s, h = s, c = s;
+        if (s.startsWith("Вопрос:")) {
+          const h = this._parseQuestionNode(s), i = h.id || f();
+          t.push({ ...h, id: i, width: 120, height: 60 }), d = i, a = i, c = i;
           continue;
         }
-        if (n.startsWith("Действие:")) {
-          const a = this._parseNode(n, "action"), s = a.id || d();
-          t.push({ ...a, id: s, width: 160, height: 60 }), f = s, h && h !== s && e.push({ from: h, to: s }), h = s;
+        if (s.startsWith("Действие:")) {
+          const h = this._parseNode(s, "action"), i = h.id || f();
+          t.push({ ...h, id: i, width: 160, height: 60 }), d = i, a && a !== i && e.push({ from: a, to: i }), a = i;
           continue;
         }
-        if (n.startsWith("Ввод/Вывод:")) {
-          const a = this._parseNode(n, "io"), s = a.id || d();
-          t.push({ ...a, id: s, width: 160, height: 60 }), f = s, h && h !== s && e.push({ from: h, to: s }), h = s;
+        if (s.startsWith("Ввод/Вывод:")) {
+          const h = this._parseNode(s, "io"), i = h.id || f();
+          t.push({ ...h, id: i, width: 160, height: 60 }), d = i, a && a !== i && e.push({ from: a, to: i }), a = i;
           continue;
         }
-        if ((n.startsWith("Да:") || n.startsWith("Нет:")) && n.includes("->")) {
-          const a = n.startsWith("Да:") ? "Да" : "Нет";
-          let m = n.substring(n.indexOf(":") + 1).trim().split("->")[0].trim().replace(/^"|"$/g, "");
+        if ((s.startsWith("Да:") || s.startsWith("Нет:")) && s.includes("->")) {
+          const h = s.startsWith("Да:") ? "Да" : "Нет";
+          let m = s.substring(s.indexOf(":") + 1).trim().split("->")[0].trim().replace(/^"|"$/g, "");
           m.startsWith('"') && m.endsWith('"') && (m = m.substring(1, m.length - 1));
-          const x = d();
+          const x = f();
           t.push({
             id: x,
             type: "action",
             text: m,
             width: 160,
             height: 60
-          }), c && e.push({ from: c, to: x, label: a }), h = x;
+          }), c && e.push({ from: c, to: x, label: h }), a = x;
           continue;
         }
-        if (n.startsWith('"') && n.endsWith('"')) {
-          const a = n.substring(1, n.length - 1), s = d();
+        if (s.startsWith('"') && s.endsWith('"')) {
+          const h = s.substring(1, s.length - 1), i = f();
           t.push({
-            id: s,
+            id: i,
             type: "action",
-            text: a,
+            text: h,
             width: 160,
             height: 60
-          }), h && h !== s && e.push({ from: h, to: s }), h = s;
+          }), a && a !== i && e.push({ from: a, to: i }), a = i;
           continue;
         }
-        if (n.includes("->")) {
-          const a = n.split("->");
-          if (a.length >= 2) {
-            const s = a[0].trim(), l = a[1].trim(), p = s.match(/^([^\s:]+)/), m = l.match(/^([^\s:]+)/);
+        if (s.includes("->")) {
+          const h = s.split("->");
+          if (h.length >= 2) {
+            const i = h[0].trim(), l = h[1].trim(), p = i.match(/^([^\s:]+)/), m = l.match(/^([^\s:]+)/);
             if (p && m) {
-              const x = p[1], w = m[1], k = t.find((y) => y.id === x), v = t.find((y) => y.id === w);
-              k && v && (e.push({ from: x, to: w }), h = w);
+              const x = p[1], w = m[1], y = t.find((k) => k.id === x), v = t.find((k) => k.id === w);
+              y && v && (e.push({ from: x, to: w }), a = w);
             }
           }
           continue;
         }
-        const u = d();
+        const u = f();
         t.push({
           id: u,
           type: "action",
-          text: n.replace(/^"|"$/g, ""),
+          text: s.replace(/^"|"$/g, ""),
           width: 160,
           height: 60
-        }), h && h !== u && e.push({ from: h, to: u }), h = u;
+        }), a && a !== u && e.push({ from: a, to: u }), a = u;
       }
       return t.some((g) => g.type === "start") || t.unshift({
-        id: d(),
+        id: f(),
         type: "start",
         text: "Начало",
         width: 160,
         height: 60
       }), t.some((g) => g.type === "end") || t.push({
-        id: d(),
+        id: f(),
         type: "end",
         text: "Конец",
         width: 160,
@@ -100,70 +100,70 @@ class T {
           }
         }
       };
-    } catch (i) {
+    } catch (n) {
       return {
         ok: !1,
-        error: `Failed to parse DRAKON diagram: ${i.message}`
+        error: `Failed to parse DRAKON diagram: ${n.message}`
       };
     }
   }
-  _parseNode(o, i) {
-    const e = o.split(":")[1].trim(), [f, h] = this._splitIdAndText(e);
+  _parseNode(o, n) {
+    const e = o.split(":")[1].trim(), [d, a] = this._splitIdAndText(e);
     return {
-      id: f || "",
-      type: i,
-      text: h || ""
+      id: d || "",
+      type: n,
+      text: a || ""
     };
   }
   _parseQuestionNode(o) {
-    const t = o.split(":")[1].trim(), [e, f] = this._splitIdAndText(t);
+    const t = o.split(":")[1].trim(), [e, d] = this._splitIdAndText(t);
     return {
       id: e || "",
       type: "question",
-      text: f || ""
+      text: d || ""
     };
   }
   _splitIdAndText(o) {
-    const i = o.replace(/^"|"$/g, ""), t = i.indexOf(" ");
-    return t === -1 ? [i, ""] : [
-      i.substring(0, t),
-      i.substring(t + 1).replace(/^"|"$/g, "")
+    const n = o.replace(/^"|"$/g, ""), t = n.indexOf(" ");
+    return t === -1 ? [n, ""] : [
+      n.substring(0, t),
+      n.substring(t + 1).replace(/^"|"$/g, "")
     ];
   }
 }
 const _ = new T();
-function O(r, o, i) {
+function O(r, o, n) {
   if (!r || r.length === 0)
     return { ok: !1, error: "f_svgBuilder_Build: no nodes provided" };
-  const t = (i == null ? void 0 : i.width) || 400, e = (i == null ? void 0 : i.height) || 300, f = [], h = [];
-  h.push(
+  const t = (n == null ? void 0 : n.width) || 400, e = (n == null ? void 0 : n.height) || 300, d = [], a = [];
+  a.push(
     "<defs>",
     '  <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">',
     '    <polygon points="0 0, 10 3.5, 0 7" fill="#000"/>',
     "  </marker>",
     "</defs>"
   );
-  const c = new Map(r.map((n) => [n.id, n]));
-  for (const n of o) {
-    const u = c.get(n.from), a = c.get(n.to);
-    if (!u || !a) continue;
-    const s = u.x || 0, l = u.y || 0, p = u.width || 160, m = u.height || 60, x = a.x || 0, w = a.y || 0, k = a.width || 160, v = a.height || 60, y = s + p / 2, S = l + m / 2, W = x + k / 2, A = w + v / 2, M = L(y, S, W, A);
-    f.push(`<path d="${M}" stroke="#000" stroke-width="2" fill="none" marker-end="url(#arrowhead)" />`);
+  const c = new Map(r.map((s) => [s.id, s]));
+  for (const s of o) {
+    const u = c.get(s.from), h = c.get(s.to);
+    if (!u || !h) continue;
+    const i = u.x || 0, l = u.y || 0, p = u.width || 160, m = u.height || 60, x = h.x || 0, w = h.y || 0, y = h.width || 160, v = h.height || 60, k = i + p / 2, S = l + m / 2, W = x + y / 2, A = w + v / 2, M = N(k, S, W, A);
+    d.push(`<path d="${M}" stroke="#000" stroke-width="2" fill="none" marker-end="url(#arrowhead)" />`);
   }
-  const d = [];
-  for (const n of r) {
-    const u = n.x || 0, a = n.y || 0, s = n.width || 160, l = n.height || 60, p = N(n, u, a, s, l);
-    d.push(p);
+  const f = [];
+  for (const s of r) {
+    const u = s.x || 0, h = s.y || 0, i = s.width || 160, l = s.height || 60, p = P(s, u, h, i, l);
+    f.push(p);
   }
   return {
     ok: !0,
     value: {
       svgString: [
         `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${t} ${e}">`,
-        h.join(`
+        a.join(`
 `),
-        ...f,
         ...d,
+        ...f,
         "</svg>"
       ].join(`
 `),
@@ -172,18 +172,18 @@ function O(r, o, i) {
     }
   };
 }
-function L(r, o, i, t) {
+function N(r, o, n, t) {
   const e = [];
-  return Math.abs(i - r) < Math.abs(t - o) ? (e.push(`M ${r} ${o}`), e.push(`L ${r} ${t}`), e.push(`L ${i} ${t}`)) : (e.push(`M ${r} ${o}`), e.push(`L ${i} ${o}`), e.push(`L ${i} ${t}`)), e.join(" ");
+  return Math.abs(n - r) < Math.abs(t - o) ? (e.push(`M ${r} ${o}`), e.push(`L ${r} ${t}`), e.push(`L ${n} ${t}`)) : (e.push(`M ${r} ${o}`), e.push(`L ${n} ${o}`), e.push(`L ${n} ${t}`)), e.join(" ");
 }
-function N(r, o, i, t, e) {
-  const f = P(r.type), h = r.text || "";
-  return `<g transform="translate(${o}, ${i})">
-    ${f}
-    <text x="${t / 2}" y="${e / 2}" text-anchor="middle" dominant-baseline="middle" font-family="sans-serif" font-size="14" fill="#000">${h}</text>
+function P(r, o, n, t, e) {
+  const d = C(r.type), a = r.text || "";
+  return `<g transform="translate(${o}, ${n})">
+    ${d}
+    <text x="${t / 2}" y="${e / 2}" text-anchor="middle" dominant-baseline="middle" font-family="sans-serif" font-size="14" fill="#000">${a}</text>
   </g>`;
 }
-function P(r) {
+function C(r) {
   switch (r) {
     case "start":
     case "end":
@@ -198,29 +198,29 @@ function P(r) {
       return '<rect x="0" y="0" width="160" height="60" fill="#fff" stroke="#000" stroke-width="2" />';
   }
 }
-const C = {
+const D = {
   horizontalSpacing: 50,
   verticalSpacing: 80,
   mainAxisX: 200,
   branchOffset: 200
 };
-function D(r, o, i = {}) {
-  const t = { ...C, ...i };
+function I(r, o, n = {}) {
+  const t = { ...D, ...n };
   if (!r || r.length === 0)
     return { ok: !1, error: "f_layout_Calculate: no nodes provided" };
-  const e = I(r);
+  const e = L(r);
   if (!e.ok)
     return e;
-  const f = e.value, h = B(r, o), c = [], d = b(
-    f.id,
+  const d = e.value, a = B(r, o), c = [], f = b(
+    d.id,
     r,
     o,
-    h,
+    a,
     0,
     t.mainAxisX,
     c,
     t
-  ), g = c.reduce((n, u) => Math.max(n, (u.y || 0) + (u.height || 0)), d);
+  ), g = c.reduce((s, u) => Math.max(s, (u.y || 0) + (u.height || 0)), f);
   return {
     ok: !0,
     value: {
@@ -230,58 +230,58 @@ function D(r, o, i = {}) {
     }
   };
 }
-function I(r) {
-  const o = r.filter((i) => i.type === "start");
+function L(r) {
+  const o = r.filter((n) => n.type === "start");
   return o.length === 0 ? { ok: !1, error: "f_node_GetStart: no start node found" } : o.length > 1 ? { ok: !1, error: "f_node_GetStart: multiple start nodes found" } : { ok: !0, value: o[0] };
 }
 function B(r, o) {
-  const i = /* @__PURE__ */ new Map();
+  const n = /* @__PURE__ */ new Map();
   for (const t of r)
-    i.set(t.id, []);
+    n.set(t.id, []);
   for (const t of o) {
-    const e = i.get(t.from) || [];
-    e.push(t.to), i.set(t.from, e);
+    const e = n.get(t.from) || [];
+    e.push(t.to), n.set(t.from, e);
   }
-  return i;
+  return n;
 }
-function b(r, o, i, t, e, f, h, c) {
-  const d = o.find((l) => l.id === r);
-  if (!d)
+function b(r, o, n, t, e, d, a, c) {
+  const f = o.find((l) => l.id === r);
+  if (!f)
     return e;
-  h.push({
-    ...d,
-    x: f,
+  a.push({
+    ...f,
+    x: d,
     y: e,
-    width: d.type === "question" ? 120 : 160,
+    width: f.type === "question" ? 120 : 160,
     height: 60
   });
-  const g = d.type, n = d.height || 60;
+  const g = f.type, s = f.height || 60;
   if (g !== "question") {
-    const l = i.filter((p) => p.from === r);
+    const l = n.filter((p) => p.from === r);
     if (l.length > 0) {
       const p = l[0].to;
       return b(
         p,
         o,
-        i,
+        n,
         t,
-        e + n + c.verticalSpacing,
-        f,
-        h,
+        e + s + c.verticalSpacing,
+        d,
+        a,
         c
       );
     }
     return e;
   }
-  const u = i.find(
+  const u = n.find(
     (l) => l.from === r && l.label === "Да"
-  ), a = i.find(
+  ), h = n.find(
     (l) => l.from === r && l.label === "Нет"
   );
-  let s = e;
+  let i = e;
   if (u) {
-    const l = c.mainAxisX + c.branchOffset, p = e + n;
-    h.push({
+    const l = c.mainAxisX + c.branchOffset, p = e + s;
+    a.push({
       id: `${r}_yes_branch_return`,
       type: "action",
       text: "",
@@ -289,24 +289,24 @@ function b(r, o, i, t, e, f, h, c) {
       y: p + c.verticalSpacing * 2,
       width: 1,
       height: 1
-    }), s = Math.max(
-      s,
+    }), i = Math.max(
+      i,
       $(
         u.to,
         o,
-        i,
+        n,
         t,
         p,
         l,
         c.mainAxisX,
         c,
-        h
+        a
       )
     );
   }
-  if (a) {
-    const l = c.mainAxisX - c.branchOffset, p = e + n;
-    h.push({
+  if (h) {
+    const l = c.mainAxisX - c.branchOffset, p = e + s;
+    a.push({
       id: `${r}_no_branch_return`,
       type: "action",
       text: "",
@@ -314,61 +314,61 @@ function b(r, o, i, t, e, f, h, c) {
       y: e + c.verticalSpacing * 2 + 50,
       width: 1,
       height: 1
-    }), s = Math.max(
-      s,
+    }), i = Math.max(
+      i,
       $(
-        a.to,
+        h.to,
         o,
-        i,
+        n,
         t,
         p,
         l,
         c.mainAxisX,
         c,
-        h
+        a
       )
     );
   }
-  return s;
+  return i;
 }
-function $(r, o, i, t, e, f, h, c, d) {
-  const g = o.find((a) => a.id === r);
+function $(r, o, n, t, e, d, a, c, f) {
+  const g = o.find((h) => h.id === r);
   if (!g)
     return e;
-  const n = g.height || 60;
-  if (d.push({
+  const s = g.height || 60;
+  if (f.push({
     ...g,
-    x: f,
+    x: d,
     y: e,
     width: g.type === "question" ? 120 : 160,
-    height: n
+    height: s
   }), g.type === "question")
     return b(
       r,
       o,
-      i,
+      n,
       t,
       e,
-      f,
       d,
+      f,
       c
     );
-  const u = i.filter((a) => a.from === r);
+  const u = n.filter((h) => h.from === r);
   if (u.length > 0) {
-    const a = u[0].to;
+    const h = u[0].to;
     return $(
-      a,
-      o,
-      i,
-      t,
-      e + n + c.verticalSpacing,
-      f,
       h,
+      o,
+      n,
+      t,
+      e + s + c.verticalSpacing,
+      d,
+      a,
       c,
-      d
+      f
     );
   }
-  return e + n;
+  return e + s;
 }
 const q = {
   id: "drakon",
@@ -380,14 +380,16 @@ const q = {
         throw new Error(o.error);
       return o.value.diagram;
     },
-    draw: async (r, o, i) => {
-      const t = o, e = D(t.nodes || [], t.edges || []);
-      if (!e.ok) return '<svg><text y="20">Layout Error</text></svg>';
-      const f = O(e.value.nodes, e.value.edges, {
-        width: e.value.width,
-        height: e.value.height
-      });
-      return f.ok ? f.value.svgString : '<svg><text y="20">Render Error</text></svg>';
+    renderer: {
+      draw: async (r, o) => {
+        const n = o, t = I(n.nodes || [], n.edges || []);
+        if (!t.ok) return `<svg><text y="20">${t.error}</text></svg>`;
+        const e = O(t.value.nodes, t.value.edges, {
+          width: t.value.width,
+          height: t.value.height
+        });
+        return e.ok ? e.value.svgString : `<svg><text y="20">${e.error}</text></svg>`;
+      }
     }
   })
 };
