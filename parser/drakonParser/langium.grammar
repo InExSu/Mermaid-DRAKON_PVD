@@ -1,0 +1,35 @@
+grammar DrakonDiagram {
+  entry Diagram:
+    'drakon' (nodes+=Node)*;
+
+  Node:
+    StartNode | EndNode | QuestionNode | ActionNode | IoNode;
+
+  StartNode:
+    'Начало:' id=ID text=STRING;
+
+  EndNode:
+    'Конец:' id=ID text=STRING;
+
+  QuestionNode:
+    'Вопрос:' id=ID text=STRING '->'
+    ('Да:' yesTarget=[Node] (edges+=Edge)*)
+    ('Нет:' noTarget=[Node] (edges+=Edge)*);
+
+  ActionNode:
+    'Действие:' id=ID text=STRING;
+
+  IoNode:
+    'Ввод/Вывод:' id=ID text=STRING;
+
+  Edge:
+    '->' target=[Node] (label=Label)?;
+
+  Label:
+    'Да' | 'Нет';
+
+  ID: /[a-zA-Z_][a-zA-Z0-9_]*/;
+  STRING: /"([^"\\]|\\.)*"/;
+  COMMENT: /\/\/.*$/;
+  WS: /[ \t\r\n]+/;
+}
