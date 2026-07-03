@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>DRAKON Plugin - Final Test</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    pre { background: #f5f5f5; padding: 10px; border-radius: 5px; }
+  </style>
+</head>
+<body>
+  <h1>DRAKON Plugin Test</h1>
+  
+  <h2>1. Native Flowchart (должен работать)</h2>
+  <pre class="mermaid">
+flowchart LR
+    A[Start] --> B[Process] --> C[End]
+  </pre>
+
+  <h2>2. DRAKON (inline plugin)</h2>
+  <pre class="mermaid">
+drakon
+  Начало: "Start"
+  Действие: "Process"
+  Конец: "End"
+  </pre>
+
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    
+    // Регистрация inline плагина
+    const drakonPlugin = {
+      id: 'drakon',
+      detector: (text) => /^\s*drakon\b/.test(text),
+      loader: () => ({
+        parse: (text) => {
+          const lines = text.trim().split('\n').filter(l => l.trim() && !l.trim().startsWith('drakon'));
+          const nodes = [];
+          const edges = [];
+          let prevId = null;
+          
+          lines.forEach((line, i) => {
+            const trimmed = line.trim();
+            let node = null;
+            
+            if (trimmed.startsWith('Начало:')) {
+              const text = trimmed.substring(7).replace(/"/g, '').trim();
+              node = { type: 'start', id: 'n1', text };
+            } else if (trimmed.startsWith('Конец:')) {
+              const text = trimmed.substring(6).replace(/"/g, '').trim();
+              node = { type: 'end', id: 'n2', text };
+            } else if (trimmed.startsWith('Действие:') || trimmed.startsWith('Ввод/Вывод:') || trimmed.startsWith('Вопрос:')) {
+              const text = trimmed.includes(':') ? trimmed.split(':')[1].replace(/"/g, '').trim() : '';
+              node = { type: 'action', id: 'n' + (i+1), text };
+            }
+            
+            if (node) {
+              nodes.push(node);
+              if (prevId) edges.push({ from: prevId, to: node.id });
+              prevId = node.id;
+            }
+          });
+          
+          // Возвращаем объект в формате, который понимает Mermaid
+          return { 
+            type: 'drakonDiagram',
+            nodes,
+            edges
+          };
+        }
+      })
+    };
+    
+    mermaid.registerExternalDiagrams([drakonPlugin]);
+    mermaid.initialize({ startOnLoad: true });
+    console.log('Mermaid initialized');
+  </script>
+</body>
+</html>

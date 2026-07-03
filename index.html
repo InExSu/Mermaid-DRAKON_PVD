@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>DRAKON Plugin - Working Demo</title>
+</head>
+<body>
+  <h1>DRAKON Demo</h1>
+  
+  <h2 style="color:green">✅ Flowchart (native - работает)</h2>
+  <pre class="mermaid">
+flowchart LR
+  A[Start] --> B[End]
+  </pre>
+
+  <h2>❓ DRAKON (тест)</h2>
+  <pre class="mermaid">
+drakon
+  Начало: Start
+  Конец: End
+  </pre>
+
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    
+    // Плагин DRAKON
+    mermaid.registerExternalDiagrams([{
+      id: 'drakon',
+      detector: (text) => /^\s*drakon\b/.test(text),
+      loader: () => ({
+        parse: (text) => {
+          // Парсим и возвращаем простую структуру
+          const nodes = [];
+          const lines = text.trim().split('\n').filter(l => l.trim() && !l.trim().startsWith('drakon'));
+          
+          for (const line of lines) {
+            const tr = line.trim();
+            if (tr.startsWith('Начало:')) {
+              nodes.push({ id: 'start', type: 'start', label: tr.slice(7).trim() });
+            } else if (tr.startsWith('Конец:')) {
+              nodes.push({ id: 'end', type: 'end', label: tr.slice(6).trim() });
+            } else if (tr.startsWith('Действие:')) {
+              nodes.push({ id: 'action'+nodes.length, type: 'action', label: tr.slice(9).trim() });
+            } else if (tr.startsWith('Ввод/Вывод:')) {
+              nodes.push({ id: 'io'+nodes.length, type: 'io', label: tr.slice(11).trim() });
+            } else if (tr.startsWith('Вопрос:')) {
+              nodes.push({ id: 'q'+nodes.length, type: 'question', label: tr.slice(8).trim() });
+            }
+          }
+          
+          return { type: 'drakon', nodes };
+        }
+      })
+    }]);
+    
+    mermaid.initialize({ startOnLoad: true });
+  </script>
+</body>
+</html>
