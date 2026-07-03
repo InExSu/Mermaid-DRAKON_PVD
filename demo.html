@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>DRAKON Plugin Demo</title>
+</head>
+<body>
+  <h1>DRAKON Plugin Demo</h1>
+  
+  <h2>Тестовая диаграмма DRAKON</h2>
+  <pre class="mermaid">
+drakon
+  Начало: "Start"
+  Действие: "Process"
+  Конец: "End"
+  </pre>
+
+  <h2>Диаграмма с ветвлением</h2>
+  <pre class="mermaid">
+drakon
+  Начало: "Start process"
+  Вопрос: "Has data?"
+    Да: "Process"
+    Нет: "Wait"
+  Конец: "End"
+  </pre>
+
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    
+    // Подключаем наш плагин
+    await import('./dist/mermaid-drakon.js');
+    
+    mermaid.initialize({ 
+      startOnLoad: true,
+      theme: 'default'
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>DRAKON Plugin Demo</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    .mermaid { background: #f5f5f5; padding: 10px; border-radius: 5px; margin: 10px 0; }
+    svg { border: 1px solid #ccc; margin: 10px 0; background: white; }
+  </style>
+</head>
+<body>
+  <h1>DRAKON Plugin Demo</h1>
+  
+  <h2>Test 1: Simple flowchart (native Mermaid)</h2>
+  <pre class="mermaid">
+flowchart TD
+    Start[Start] --> Process[Process] --> End[End]
+  </pre>
+
+  <h2>Test 2: DRAKON diagram</h2>
+  <pre class="mermaid" id="drakon-test">
+drakon
+  Начало: Start
+  Действие: Process
+  Конец: End
+  </pre>
+
+  <h2>Test 3: DRAKON with branches</h2>
+  <pre class="mermaid" id="drakon-test2">
+drakon
+  Начало: Begin
+  Вопрос: Check?
+    Да: Process
+    Нет: Wait
+  Конец: Finish
+  </pre>
+
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    
+    // Плагин DRAKON (инлайн для отладки)
+    mermaid.registerExternalDiagrams([{
+      id: 'drakon',
+      detector: (text) => /^\s*drakon\b/.test(text),
+      loader: async () => ({
+        parse: async (text) => {
+          const lines = text.trim().split('\n').filter(l => l.trim() && !l.trim().startsWith('drakon'));
+          const nodes = [];
+          const edges = [];
+          
+          let lastId = null;
+          let questionId = null;
+          
+          for (const line of lines) {
+            const trimmed = line.trim();
+            if (trimmed.startsWith('Начало:')) {
+              const id = `start_${nodes.length}`;
+              const text = trimmed.split(':')[1]?.trim().replace(/"/g, '') || 'Start';
+              nodes.push({ id, type: 'start', text, x: 200, y: nodes.length * 80, width: 160, height: 60 });
+              lastId = id;
+            } else if (trimmed.startsWith('Конец:')) {
+              const id = `end_${nodes.length}`;
+              const text = trimmed.split(':')[1]?.trim().replace(/"/g, '') || 'End';
+              nodes.push({ id, type: 'end', text, x: 200, y: nodes.length * 80, width: 160, height: 60 });
+              lastId = id;
+            } else if (trimmed.startsWith('Вопрос:')) {
+              const id = `q_${nodes.length}`;
+              const text = trimmed.split(':')[1]?.trim().replace(/"/g, '') || 'Question';
+              nodes.push({ id, type: 'question', text, x: 200, y: nodes.length * 80, width: 120, height: 60 });
+              questionId = id;
+              lastId = id;
+            } else if (trimmed.startsWith('Действие:')) {
+              const id = `a_${nodes.length}`;
+              const text = trimmed.split(':')[1]?.trim().replace(/"/g, '') || 'Action';
+              nodes.push({ id, type: 'action', text, x: 200, y: nodes.length * 80, width: 160, height: 60 });
+              if (lastId) edges.push({ from: lastId, to: id });
+              lastId = id;
+            }
+          }
+          
+          return { type: 'drakonDiagram', nodes, edges };
+        },
+        renderer: {
+          draw: async (id, diagram) => {
+            const nodes = diagram.nodes || [];
+            const edges = diagram.edges || [];
+            let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 ${Math.max(200, nodes.length * 80 + 100)}" width="400" height="${Math.max(200, nodes.length * 80 + 100)}">\n`;
+            svg += '<defs><marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#000"/></defs>\n';
+            
+            for (const n of nodes) {
+              const y = n.y || 0;
+              const shape = n.type === 'start' || n.type === 'end' 
+                ? `<ellipse cx="80" cy="30" rx="80" ry="30" fill="#fff" stroke="#000" stroke-width="2"/>`
+                : n.type === 'question'
+                ? `<polygon points="60,0 120,30 60,60 0,30" fill="#fff" stroke="#000" stroke-width="2"/>`
+                : `<rect x="0" y="0" width="160" height="60" rx="5" ry="5" fill="#fff" stroke="#000" stroke-width="2"/>`;
+              svg += `<g transform="translate(${n.x || 0},${y})">${shape}<text x="80" y="30" text-anchor="middle" dominant-baseline="middle">${n.text}</text></g>\n`;
+            }
+            
+            svg += '</svg>';
+            return svg;
+          }
+        }
+      })
+    }]);
+    
+    mermaid.initialize({ 
+      startOnLoad: true,
+      theme: 'default'
+    });
+    
+    console.log('Mermaid initialized with DRAKON plugin');
+  </script>
+</body>
+</html>
