@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>DRAKON Plugin - Simple Test</title>
+</head>
+<body>
+  <h1>DRAKON Plugin Test</h1>
+  
+  <h2>Simple Flowchart (Mermaid native)</h2>
+  <pre class="mermaid">
+flowchart TD
+    Start[Start] --> Process[Process Data] --> End[End]
+  </pre>
+
+  <h2>DRAKON Diagram (our plugin)</h2>
+  <pre class="mermaid">
+drakon
+  Начало: "Start Process"
+  Действие: "Process Data"
+  Конец: "Finish"
+  </pre>
+
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    
+    // Inline DRAKON plugin that follows Mermaid 10 API
+    mermaid.registerExternalDiagrams([{
+      id: 'drakon',
+      detector: (text) => /^\s*drakon\b/.test(text),
+      loader: () => ({
+        parse: (text) => {
+          const lines = text.trim().split('\n').filter(l => l.trim() && l.trim() !== 'drakon');
+          const nodes = [];
+          
+          lines.forEach((line, i) => {
+            const trimmed = line.trim();
+            if (trimmed.startsWith('Начало:')) {
+              const text = trimmed.substring(7).trim().replace(/"/g, '');
+              nodes.push({ id: 'n1', type: 'start', text, x: 200, y: i * 80 });
+            } else if (trimmed.startsWith('Конец:')) {
+              const text = trimmed.substring(6).trim().replace(/"/g, '');
+              nodes.push({ id: 'n2', type: 'end', text, x: 200, y: i * 80 });
+            } else if (trimmed.startsWith('Действие:')) {
+              const text = trimmed.substring(9).trim().replace(/"/g, '');
+              nodes.push({ id: `n${i+1}`, type: 'action', text, x: 200, y: i * 80 });
+            }
+          });
+          
+          return { type: 'drakon', nodes, edges: [] };
+        }
+      })
+    }]);
+    
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'default'
+    });
+    
+    // Log for debugging
+    console.log('Mermaid initialized, plugin registered');
+  </script>
+</body>
+</html>
