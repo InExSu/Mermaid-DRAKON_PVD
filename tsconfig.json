@@ -10,7 +10,8 @@
     "outDir": "./dist",
     "rootDir": "./src",
     "declaration": true,
-    "moduleDetection": "force"
+    "moduleDetection": "force",
+    "types": ["vitest", "node"]
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]

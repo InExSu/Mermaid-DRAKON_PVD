@@ -1,4 +1,4 @@
-import { DrakonNode, DrakonEdge } from './drakonDb';
+import { DrakonNode, DrakonEdge, type Result } from './drakonDb';
 
 interface LayoutResult {
   nodes: DrakonNode[];
